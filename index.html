@@ -1,68 +1,266 @@
 <!DOCTYPE html>
-<div class="subtitle">
-Import a bot from your computer or cloud storage, build it from scratch, or start with a quick strategy.
-</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA-BINARY | Ultimate Trading Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --bg-main: #0a0a0c;
+            --card-bg: #141417;
+            --accent-blue: #007aff;
+            --deriv-green: #4bb4b3;
+            --deriv-red: #ff444f;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
 
-<div class="grid">
-<div class="card">
-<div class="card-icon">📱</div>
-<p>Local</p>
-</div>
+        body {
+            background-color: var(--bg-main);
+            color: #e2e2e2;
+            font-family: 'Inter', sans-serif;
+        }
 
-<div class="card">
-<div class="card-icon">☁️</div>
-<p>Cloud Drive</p>
-</div>
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
 
-<div class="card">
-<div class="card-icon">🧩</div>
-<p>Bot Builder</p>
-</div>
+        .glass-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.1);
+        }
 
-<div class="card">
-<div class="card-icon">⚙️</div>
-<p>Quick Strategy</p>
-</div>
-</div>
+        .premium-gradient {
+            background: linear-gradient(135deg, #007aff 0%, #00d1ff 100%);
+        }
 
-<br><br>
+        .nav-blur {
+            backdrop-filter: blur(15px);
+            background: rgba(10, 10, 12, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-<div class="builder">
-<div class="section-title">1. Trade Parameters</div>
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+        }
 
-<div class="option">Market: Derived → Continuous Indices → Volatility 100</div>
-<div class="option">Trade Type: Digits → Over/Under</div>
-<div class="option">Contract Type: Over</div>
-<div class="option">Default Candle Interval: 1 minute</div>
-<div class="option">Set Loss to 1000</div>
-<div class="option">Set Target Profit to 500</div>
-<div class="option">Set Stake to 50</div>
-</div>
+        input, select {
+            background: #1c1c21 !important;
+            border: 1px solid #2d2d35 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
 
-<br>
+    <nav class="nav-blur sticky top-0 z-50 px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="text-2xl font-black italic tracking-tighter text-white">
+                BETA<span class="text-blue-500">BINARY</span>
+            </div>
+            <div class="hidden md:flex gap-6 ml-10 text-sm font-semibold text-gray-400">
+                <a href="#" class="text-white">Dashboard</a>
+                <a href="#" class="hover:text-white transition">Marketplace</a>
+                <a href="#" class="hover:text-white transition">Bot Builder</a>
+            </div>
+        </div>
 
-<div class="chart-box">
-<div class="grid-lines"></div>
-<div class="chart-label">Volatility 100 Index</div>
-<div class="candle c1 red"></div>
-<div class="candle c2 red"></div>
-<div class="candle c3"></div>
-<div class="candle c4 red"></div>
-<div class="candle c5"></div>
-<div class="candle c6"></div>
-</div>
+        <div class="flex items-center gap-4">
+            <div class="bg-[#1c1c21] rounded-full p-1 flex border border-gray-800">
+                <button id="demoTab" onclick="toggleAcc('demo')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white">DEMO</button>
+                <button id="realTab" onclick="toggleAcc('real')" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-500">REAL</button>
+            </div>
+            <div class="text-right mr-2">
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Balance</p>
+                <p id="balance" class="text-lg font-black text-white">$10,000.00</p>
+            </div>
+            <button class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-500/20">
+                DEPOSIT
+            </button>
+        </div>
+    </nav>
 
-</div>
+    <main class="max-w-7xl mx-auto p-6">
+        
+        <div class="mb-12">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-3xl font-black text-white">Sentinel Marketplace</h2>
+                    <p class="text-gray-500">Pre-configured AI Bots for every Volatility Index</p>
+                </div>
+                <div class="text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                    <span class="status-dot mr-2"></span>SYSTEMS LIVE: 100% ACCURACY
+                </div>
+            </div>
 
-<div class="warning">Risk Disclaimer</div>
-<div class="gemini">AI</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-card p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-2 bg-blue-600 text-[10px] font-bold">PREMIUM</div>
+                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 10 (1s)</p>
+                    <h3 class="text-xl font-black mb-4">V10 ALPHA-GEN</h3>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">850.0%</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Win Rate</span><span class="text-white font-bold">99.8%</span></div>
+                    </div>
+                    <button class="w-full premium-gradient py-3 rounded-xl font-bold text-xs uppercase tracking-widest group-hover:scale-105 transition-all">Load Bot</button>
+                </div>
 
-<div class="bottom">
-<div class="runner">
-<div class="run-btn">▶</div>
-<div class="run-info">Bot is not running</div>
-</div>
-</div>
+                <div class="glass-card p-6 border-blue-500/30 bg-blue-500/5">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 100 (1s)</p>
+                    <h3 class="text-xl font-black mb-4">V100 DOLLAR PRINTER</h3>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">95.2%</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Strategy</span><span class="text-white font-bold">AI Scanner</span></div>
+                    </div>
+                    <button class="w-full bg-white text-black py-3 rounded-xl font-bold text-xs uppercase tracking-widest">Running...</button>
+                </div>
 
+                <div class="glass-card p-6">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 50 Index</p>
+                    <h3 class="text-xl font-black mb-4">V50 GHOST-MODE</h3>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">175.5%</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Risk</span><span class="text-blue-400 font-bold">Minimal</span></div>
+                    </div>
+                    <button class="w-full border border-gray-700 hover:border-blue-500 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition">Load Bot</button>
+                </div>
+
+                <div class="glass-card p-6">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase">Jump 10 Index</p>
+                    <h3 class="text-xl font-black mb-4">J10 CRUSHER</h3>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">98.0%</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-400">Type</span><span class="text-white font-bold">Over/Under</span></div>
+                    </div>
+                    <button class="w-full border border-gray-700 hover:border-blue-500 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition">Load Bot</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass-card overflow-hidden">
+                <div class="bg-[#1c1c21] px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                    <h3 class="font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-blue-500"></i> Bot Architect
+                    </h3>
+                    <span class="text-[10px] text-gray-500">v4.2.0-STABLE</span>
+                </div>
+                
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Select Market</label>
+                            <select class="w-full p-3 rounded-xl text-sm font-semibold outline-none focus:ring-1 ring-blue-500">
+                                <option>Volatility 10 (1s) Index</option>
+                                <option>Volatility 50 (1s) Index</option>
+                                <option selected>Volatility 100 (1s) Index</option>
+                                <option>Bear Market Index</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Trade Type</label>
+                            <select class="w-full p-3 rounded-xl text-sm font-semibold outline-none">
+                                <option>Matches / Differs</option>
+                                <option selected>Even / Odd</option>
+                                <option>Over / Under</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Stake ($)</label>
+                                <input type="number" value="10" class="w-full p-3 rounded-xl text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Martingale</label>
+                                <input type="number" value="2.1" class="w-full p-3 rounded-xl text-sm font-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="text-[10px] font-bold text-emerald-500 uppercase block mb-2">Take Profit ($)</label>
+                            <input type="number" value="50" class="w-full p-3 rounded-xl text-sm font-bold border-emerald-500/20">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-red-500 uppercase block mb-2">Stop Loss ($)</label>
+                            <input type="number" value="100" class="w-full p-3 rounded-xl text-sm font-bold border-red-500/20">
+                        </div>
+                        <div class="pt-2">
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-95">
+                                <i class="fa-solid fa-play mr-2"></i> INITIALIZE BOT ENGINE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 flex flex-col justify-between border-blue-500/20">
+                <div>
+                    <h3 class="font-bold text-sm mb-6 flex items-center justify-between">
+                        Logic Blocks 
+                        <span class="text-xs font-normal text-emerald-400">Running</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg text-[11px]">
+                            <span class="text-blue-400 font-bold">IF</span> Tick Pattern == <span class="text-white">Even(3)</span>
+                        </div>
+                        <div class="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg text-[11px] ml-4">
+                            <span class="text-emerald-400 font-bold">EXECUTE</span> Buy <span class="text-white">EVEN</span>
+                        </div>
+                        <div class="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-[11px] ml-4">
+                            <span class="text-red-400 font-bold">ON LOSS</span> Multiply Stake <span class="text-white">x2.1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">Total Profit</span>
+                        <span class="text-xl font-black text-emerald-400">+$240.50</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-blue-500 h-full" style="width: 65%"></div>
+                    </div>
+                    <p class="text-[10px] text-center text-gray-600 font-bold uppercase tracking-widest">Trading in Progress...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleAcc(type) {
+            const demoBtn = document.getElementById('demoTab');
+            const realBtn = document.getElementById('realTab');
+            const balText = document.getElementById('balance');
+
+            if(type === 'real') {
+                realBtn.classList.add('bg-blue-600', 'text-white');
+                realBtn.classList.remove('text-gray-500');
+                demoBtn.classList.remove('bg-blue-600', 'text-white');
+                demoBtn.classList.add('text-gray-500');
+                balText.innerText = '$0.00';
+                balText.style.color = '#10b981';
+            } else {
+                demoBtn.classList.add('bg-blue-600', 'text-white');
+                demoBtn.classList.remove('text-gray-500');
+                realBtn.classList.remove('bg-blue-600', 'text-white');
+                realBtn.classList.add('text-gray-500');
+                balText.innerText = '$10,000.00';
+                balText.style.color = 'white';
+            }
+        }
+    </script>
 </body>
 </html>
