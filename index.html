@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Binary Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #05070a; color: #f8fafc; overflow: hidden; }
+        .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.05); }
+        .call-btn { background: linear-gradient(180deg, #10b981 0%, #059669 100%); }
+        .put-btn { background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%); }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <header class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-[#0a0f18]">
+        <div class="flex items-center gap-8">
+            <span class="text-blue-500 font-black text-2xl tracking-tighter">APEX<span class="text-white">BINARY</span></span>
+            <div class="hidden md:flex gap-4 text-sm font-medium text-slate-400">
+                <span class="text-blue-400 border-b-2 border-blue-500 pb-5">Trading</span>
+                <span class="hover:text-white cursor-pointer transition">Portfolio</span>
+                <span class="hover:text-white cursor-pointer transition">Leaderboard</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-700 flex flex-col items-end">
+                <span class="text-[10px] text-slate-500 leading-none">REAL ACCOUNT</span>
+                <span class="text-emerald-400 font-mono font-bold">$1,240.50</span>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-bold text-sm">DEPOSIT</button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        <aside class="w-16 md:w-20 border-r border-slate-800 flex flex-col items-center py-6 gap-8 bg-[#0a0f18]">
+            <i class="fas fa-chart-area text-blue-500 text-xl cursor-pointer"></i>
+            <i class="fas fa-bolt text-slate-600 hover:text-white text-xl cursor-pointer"></i>
+            <i class="fas fa-history text-slate-600 hover:text-white text-xl cursor-pointer"></i>
+            <i class="fas fa-cog text-slate-600 hover:text-white text-xl cursor-pointer mt-auto"></i>
+        </aside>
+
+        <section class="flex-1 flex flex-col relative bg-[#05070a]">
+            <div class="flex-1 w-full bg-[#05070a] relative">
+                <div class="absolute top-4 left-4 glass-panel p-3 rounded-xl flex items-center gap-4">
+                    <div class="bg-yellow-500/20 p-2 rounded-lg"><i class="fab fa-bitcoin text-yellow-500"></i></div>
+                    <div>
+                        <p class="text-xs text-slate-500">BTC/USD</p>
+                        <p class="font-bold font-mono">64,231.40 <span class="text-emerald-500 text-[10px]">+0.42%</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-28 border-t border-slate-800 bg-[#0a0f18] flex items-center justify-between px-8">
+                <div class="flex gap-4">
+                    <div class="flex flex-col">
+                        <label class="text-[10px] text-slate-500 mb-1 uppercase">Amount ($)</label>
+                        <input type="number" value="10" class="bg-slate-900 border border-slate-700 rounded p-2 w-24 text-center font-mono focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[10px] text-slate-500 mb-1 uppercase">Duration</label>
+                        <select class="bg-slate-900 border border-slate-700 rounded p-2 w-24 outline-none">
+                            <option>1 Min</option>
+                            <option>5 Min</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex-1 max-w-md mx-8 flex gap-4">
+                    <button class="call-btn flex-1 py-4 rounded-xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition active:scale-95">
+                        <i class="fas fa-arrow-up"></i> CALL
+                    </button>
+                    <button class="put-btn flex-1 py-4 rounded-xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition active:scale-95">
+                        <i class="fas fa-arrow-down"></i> PUT
+                    </button>
+                </div>
+
+                <div class="hidden lg:block text-right">
+                    <p class="text-[10px] text-slate-500 uppercase">Profit (82%)</p>
+                    <p class="text-2xl font-bold text-emerald-400 font-mono">+$8.20</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>
