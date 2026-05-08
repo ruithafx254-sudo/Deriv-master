@@ -1,290 +1,239 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Dollar Printer Pro</title>
-<style>
-  :root {
-    --bg: #0e1117; --surface: #161b22; --border: #30363d;
-    --text: #c9d1d9; --muted: #8b949e;
-    --green: #238636; --green-glow: rgba(35, 134, 54, 0.2);
-    --red: #da3633; --amber: #d29922;
-    --blue: #2f81f7;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-  body { 
-    margin: 0; background: var(--bg); color: var(--text); 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    overflow-x: hidden; height: 100vh; display: flex; flex-direction: column;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMEGA ALPHA | Premium Trading Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root {
+            --primary-blue: #0066FF;
+            --deriv-green: #4bb4b3;
+            --deriv-red: #ff444f;
+            --bg-dark: #0e0e10;
+            --card-dark: #161618;
+            --border-color: #2a2a2e;
+        }
 
-  /* MODAL SYSTEM */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-  .modal-card { background: var(--surface); width: 92%; max-width: 400px; border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-  
-  .fund-toggle { display: flex; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
-  .toggle-btn { flex: 1; padding: 12px; border: 0; background: transparent; color: var(--muted); font-weight: 700; cursor: pointer; border-radius: 8px; transition: 0.2s; }
-  .toggle-btn.active { background: var(--surface); color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid var(--border); }
-  
-  .input-group { margin-bottom: 15px; }
-  .input-label { font-size: 11px; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-  .modal-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; color: #fff; font-weight: 600; font-size: 15px; }
-  .modal-input:focus { border-color: var(--blue); }
-  
-  .kes-display { background: var(--green-glow); color: #3fb950; padding: 12px; border-radius: 10px; font-weight: 800; text-align: center; margin: 10px 0; border: 1px solid rgba(63, 185, 80, 0.3); }
-  .action-btn { width: 100%; padding: 16px; border-radius: 12px; border: 0; font-weight: 800; font-size: 16px; cursor: pointer; }
-  .btn-deposit { background: var(--green); color: #fff; }
-  .btn-withdraw { background: var(--blue); color: #fff; }
+        body { 
+            background-color: var(--bg-dark); 
+            color: #ffffff; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+        }
 
-  /* MAIN LAYOUT */
-  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: #fff; }
-  .logo-icon { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: grid; place-items: center; color: #fff; font-size: 20px; }
-  .header-actions { display: flex; align-items: center; gap: 12px; }
-  .bal-box { background: var(--bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px; font-weight: 800; color: #fff; font-size: 14px; }
-  .funds-trigger { background: var(--green); color: #fff; border: 0; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .glass-header {
+            background: rgba(14, 14, 16, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  /* CHART SECTION */
-  .market-strip { background: var(--surface); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .market-select { background: transparent; border: 0; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
-  .live-price { font-size: 20px; font-weight: 900; color: #fff; }
-  
-  canvas#chart { width: 100%; height: 200px; background: var(--bg); display: block; border-bottom: 1px solid var(--border); }
+        .premium-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
 
-  /* CONTROL PANELS */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
-  .stat-card { padding: 15px; border-right: 1px solid var(--border); text-align: center; }
-  .stat-val { font-size: 24px; font-weight: 900; color: var(--blue); margin-top: 4px; }
-  .stat-label { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+        .premium-card:hover { border-color: var(--primary-blue); }
 
-  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
-  .setting-item { background: var(--surface); padding: 12px; }
-  .setting-input { background: transparent; border: 0; color: #fff; width: 100%; font-size: 18px; font-weight: 800; padding: 4px 0; }
+        .bot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
 
-  .purchase-area { display: grid; grid-template-columns: 1fr 1fr; padding: 15px; gap: 15px; background: var(--surface); }
-  .purchase-btn { padding: 20px; border-radius: 16px; border: 0; color: #fff; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-  .btn-up { background: var(--green); }
-  .btn-down { background: var(--red); }
-  .payout-text { font-size: 12px; font-weight: 500; opacity: 0.8; margin-top: 4px; }
+        .input-dark {
+            background: #1c1c1f;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
 
-  /* DIGITS */
-  .digits-row { display: grid; grid-template-columns: repeat(10, 1fr); background: var(--bg); padding: 10px 5px; }
-  .digit-dot { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; border: 1px solid var(--border); transition: 0.2s; }
-  .digit-dot.active { border-color: var(--green); background: var(--green-glow); color: #fff; }
-</style>
+        .active-account-tab {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Matching the Deriv-style payout indicators */
+        .payout-tag { color: var(--deriv-green); font-weight: 800; font-size: 12px; }
+    </style>
 </head>
 <body>
 
-<div id="fundsModal" class="modal-overlay">
-  <div class="modal-card">
-    <div class="fund-toggle">
-      <button id="tabDeposit" class="toggle-btn active" onclick="setMode('deposit')">DEPOSIT</button>
-      <button id="tabWithdraw" class="toggle-btn" onclick="setMode('withdraw')">WITHDRAW</button>
+    <header class="glass-header px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center font-bold">Ω</div>
+            <span class="font-extrabold text-lg tracking-tighter">OMEGA<span class="text-blue-500">ALPHA</span></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="bg-[#1c1c1f] rounded-full p-1 flex items-center border border-gray-800">
+                <button onclick="switchAcc('demo')" id="demoBtn" class="px-3 py-1 rounded-full text-[10px] font-bold active-account-tab">DEMO</button>
+                <button onclick="switchAcc('real')" id="realBtn" class="px-3 py-1 rounded-full text-[10px] font-bold text-gray-400">REAL</button>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-gray-500 font-bold uppercase">Balance</div>
+                <div class="text-sm font-extrabold" id="balanceDisplay">10,000.00 USD</div>
+            </div>
+            <button class="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-xl font-bold text-xs transition-all shadow-lg shadow-emerald-500/20">
+                DEPOSIT
+            </button>
+        </div>
+    </header>
+
+    <main class="p-4 pb-24">
+        
+        <section class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-extrabold text-xl">Market Sentinels</h2>
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded-full border border-blue-500/20 font-bold">98.4% ACCURACY LIVE</span>
+            </div>
+            
+            <div class="bot-grid">
+                <div class="premium-card p-4 text-center">
+                    <div class="text-xs text-gray-500 font-bold mb-1">VOLATILITY 10 (1S)</div>
+                    <div class="text-blue-500 text-xl font-black mb-3">V10-ALPHA</div>
+                    <div class="payout-tag">Payout: 95.2%</div>
+                    <button class="mt-3 w-full bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white py-2 rounded-lg text-xs font-bold transition-all">ACTIVATE</button>
+                </div>
+                <div class="premium-card p-4 text-center">
+                    <div class="text-xs text-gray-500 font-bold mb-1">VOLATILITY 50 (1S)</div>
+                    <div class="text-purple-500 text-xl font-black mb-3">V50-OMEGA</div>
+                    <div class="payout-tag">Payout: 94.8%</div>
+                    <button class="mt-3 w-full bg-blue-600/10 hover:bg-blue-600 text-blue-500 hover:text-white py-2 rounded-lg text-xs font-bold transition-all">ACTIVATE</button>
+                </div>
+                <div class="premium-card p-4 text-center border-blue-500/50 shadow-lg shadow-blue-500/10">
+                    <div class="text-xs text-gray-500 font-bold mb-1">VOLATILITY 100 (1S)</div>
+                    <div class="text-emerald-500 text-xl font-black mb-3">V100-PRO</div>
+                    <div class="payout-tag">Payout: 96.1%</div>
+                    <button class="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg text-xs font-bold transition-all">RUNNING</button>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="font-extrabold text-xl mb-4">Bot Architect <span class="text-gray-500 font-normal text-sm ml-2">Configuration v4.0</span></h2>
+            
+            <div class="premium-card overflow-hidden">
+                <div class="bg-[#1c1c1f] p-4 border-b border-gray-800 flex items-center justify-between">
+                    <span class="text-sm font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-blue-500"></i> Logic Configuration
+                    </span>
+                    <i class="fa-solid fa-expand text-gray-600 cursor-pointer"></i>
+                </div>
+
+                <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase block mb-2">Select Market</label>
+                            <select class="input-dark">
+                                <option>Volatility 10 (1s) Index</option>
+                                <option>Volatility 25 (1s) Index</option>
+                                <option selected>Volatility 100 (1s) Index</option>
+                                <option>Jump 10 Index</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase block mb-2">Trade Type</label>
+                            <select class="input-dark">
+                                <option>Digits (Matches/Differs)</option>
+                                <option selected>Digits (Even/Odd)</option>
+                                <option>Over/Under</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase block mb-2">Stake (USD)</label>
+                                <input type="number" class="input-dark" value="10.00">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase block mb-2">Martingale</label>
+                                <input type="number" class="input-dark" value="2.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-emerald-500 uppercase block mb-2">Take Profit</label>
+                                <input type="number" class="input-dark border-emerald-500/30" value="50.00">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-red-500 uppercase block mb-2">Stop Loss</label>
+                                <input type="number" class="input-dark border-red-500/30" value="100.00">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase block mb-2">Bot Strategy</label>
+                            <div class="bg-[#0e0e10] p-3 rounded-lg border border-gray-800 flex items-center justify-between">
+                                <span class="text-xs text-gray-400">Alpha Trend Follower</span>
+                                <i class="fa-solid fa-chevron-right text-gray-600 text-[10px]"></i>
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95">
+                                <i class="fa-solid fa-play mr-2"></i> INITIALIZE TRADING BOT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-[#161618] border-t border-gray-800 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+                <span class="text-[10px] text-gray-500 font-bold uppercase">Net Profit</span>
+                <span class="text-emerald-500 font-black" id="profitVal">+124.50 USD</span>
+            </div>
+            <div class="w-px h-8 bg-gray-800"></div>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-gray-500 font-bold uppercase">Wins/Losses</span>
+                <span class="text-white font-black">12 / 2</span>
+            </div>
+        </div>
+        
+        <button class="bg-red-500/10 text-red-500 px-6 py-2 rounded-xl font-bold text-sm border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">
+            STOP BOT
+        </button>
     </div>
-    
-    <div id="depositForm">
-      <div class="input-group">
-        <label class="input-label">M-Pesa Name</label>
-        <input type="text" id="depName" class="modal-input" placeholder="Full Name">
-      </div>
-      <div class="input-group">
-        <label class="input-label">M-Pesa Number</label>
-        <input type="number" id="depPhone" class="modal-input" placeholder="07XXXXXXXX">
-      </div>
-      <div class="input-group">
-        <label class="input-label">Amount (USD)</label>
-        <input type="number" id="depAmt" class="modal-input" placeholder="Min $5" oninput="calcKES(this.value)">
-      </div>
-      <div class="kes-display" id="kesValue">KES 0.00</div>
-      <button class="action-btn btn-deposit" onclick="handleDeposit()">PROCEED TO SECURE DEPOSIT</button>
-    </div>
 
-    <div id="withdrawForm" style="display:none;">
-      <div class="input-group">
-        <label class="input-label">Phone Number</label>
-        <input type="number" id="wdPhone" class="modal-input" placeholder="07XXXXXXXX">
-      </div>
-      <div class="input-group">
-        <label class="input-label">Amount to Withdraw</label>
-        <input type="number" id="wdAmt" class="modal-input" placeholder="Min $5">
-      </div>
-      <button class="action-btn btn-withdraw" onclick="handleWithdraw()">WITHDRAW NOW</button>
-    </div>
+    <script>
+        function switchAcc(type) {
+            const demoBtn = document.getElementById('demoBtn');
+            const realBtn = document.getElementById('realBtn');
+            const bal = document.getElementById('balanceDisplay');
 
-    <button onclick="closeModal()" style="width:100%; margin-top:15px; background:none; border:0; color:var(--muted); font-weight:700;">CANCEL</button>
-  </div>
-</div>
-
-<div class="top-bar">
-  <div class="brand"><div class="logo-icon">$</div> Dollar Printer</div>
-  <div class="header-actions">
-    <div class="bal-box">$<span id="mainBalance">0.00</span></div>
-    <button class="funds-trigger" onclick="openModal()">FUNDS</button>
-  </div>
-</div>
-
-<div class="market-strip">
-  <select class="market-select" onchange="switchMarket(this.value)">
-    <option value="10">Volatility 10 (1s) Index</option>
-    <option value="25">Volatility 25 (1s) Index</option>
-    <option value="50">Volatility 50 (1s) Index</option>
-    <option value="75">Volatility 75 (1s) Index</option>
-    <option value="100">Volatility 100 (1s) Index</option>
-  </select>
-  <div class="live-price" id="priceDisplay">0.00</div>
-</div>
-
-<canvas id="chart"></canvas>
-
-<div class="digits-row" id="digitRow"></div>
-
-<div class="stats-row">
-  <div class="stat-card">
-    <div class="stat-label">Prediction</div>
-    <div class="stat-val" id="predDisplay">5</div>
-  </div>
-  <div class="stat-card" style="border:0;">
-    <div class="stat-label">Last Digit</div>
-    <div class="stat-val" id="lastDigitDisplay">0</div>
-  </div>
-</div>
-
-<div class="settings-grid">
-  <div class="setting-item">
-    <label class="stat-label">Stake (USD)</label>
-    <input type="number" id="stakeInput" class="setting-input" value="10">
-  </div>
-  <div class="setting-item">
-    <label class="stat-label">Contract Type</label>
-    <div style="font-weight:800; font-size:16px; margin-top:5px;">Even/Odd</div>
-  </div>
-</div>
-
-<div class="purchase-area">
-  <button class="purchase-btn btn-up" onclick="toast('Trade Executed: Even')">EVEN<span class="payout-text">95% Payout</span></button>
-  <button class="purchase-btn btn-down" onclick="toast('Trade Executed: Odd')">ODD<span class="payout-text">95% Payout</span></button>
-</div>
-
-<script>
-  let balance = 0.00;
-  let currentMarket = 10;
-  let price = 945.50;
-  let history = Array(40).fill(945.50);
-
-  // 1. MODAL LOGIC
-  function openModal() { document.getElementById('fundsModal').style.display = 'flex'; }
-  function closeModal() { document.getElementById('fundsModal').style.display = 'none'; }
-  
-  function setMode(mode) {
-    const isDep = mode === 'deposit';
-    document.getElementById('tabDeposit').classList.toggle('active', isDep);
-    document.getElementById('tabWithdraw').classList.toggle('active', !isDep);
-    document.getElementById('depositForm').style.display = isDep ? 'block' : 'none';
-    document.getElementById('withdrawForm').style.display = isDep ? 'none' : 'block';
-  }
-
-  function calcKES(val) {
-    const rate = 132.50;
-    document.getElementById('kesValue').innerText = `KES ${(val * rate).toLocaleString()}`;
-  }
-
-  function handleDeposit() {
-    const name = document.getElementById('depName').value;
-    const phone = document.getElementById('depPhone').value;
-    const amt = parseFloat(document.getElementById('depAmt').value);
-    if (!name || !phone || amt < 5) return alert("Enter valid details ($5 Min)");
-    
-    const kes = amt * 132.50;
-    // Pre-locked redirect link
-    const url = `https://lipwa.link/8367?name=${encodeURIComponent(name)}&phone=${phone}&amount=${kes}&lock=true`;
-    window.location.href = url;
-  }
-
-  function handleWithdraw() {
-    const amt = parseFloat(document.getElementById('wdAmt').value);
-    if (amt < 5) return alert("Min $5");
-    if (amt > balance) return alert("Insufficient Balance");
-    
-    balance -= amt;
-    updateUI();
-    alert("Successfully Withdrawn!");
-    closeModal();
-  }
-
-  // 2. ENGINE LOGIC (Deriv-Style)
-  function switchMarket(m) {
-    currentMarket = m;
-    price = Math.random() * 1000;
-  }
-
-  const canvas = document.getElementById('chart');
-  const ctx = canvas.getContext('2d');
-
-  function engine() {
-    setInterval(() => {
-      // Simulate Tick
-      let movement = (Math.random() - 0.495) * (currentMarket / 20);
-      price += movement;
-      const lastDigit = Math.floor(price * 100) % 10;
-      
-      // Prediction Logic (Deriv-Style)
-      const prediction = (lastDigit + 1) % 10;
-      
-      history.push(price);
-      if(history.length > 50) history.shift();
-      
-      updateUI(price, lastDigit, prediction);
-      drawChart();
-    }, 1000);
-  }
-
-  function updateUI(p, d, pred) {
-    if(p) {
-      document.getElementById('priceDisplay').innerText = p.toFixed(2);
-      document.getElementById('lastDigitDisplay').innerText = d;
-      document.getElementById('predDisplay').innerText = pred;
-    }
-    document.getElementById('mainBalance').innerText = balance.toFixed(2);
-    
-    // Render Digits
-    const row = document.getElementById('digitRow');
-    row.innerHTML = '';
-    for(let i=0; i<10; i++) {
-      const dot = document.createElement('div');
-      dot.className = (i === d) ? 'digit-dot active' : 'digit-dot';
-      dot.innerText = i;
-      row.appendChild(dot);
-    }
-  }
-
-  function drawChart() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.strokeStyle = '#2f81f7';
-    ctx.lineWidth = 3;
-    
-    let min = Math.min(...history);
-    let max = Math.max(...history);
-    let range = max - min || 1;
-
-    history.forEach((val, i) => {
-      let x = (i / (history.length - 1)) * canvas.width;
-      let y = canvas.height - ((val - min) / range * (canvas.height - 40) + 20);
-      if(i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-  }
-
-  function toast(msg) { alert(msg); }
-
-  window.onload = () => {
-    updateUI();
-    engine();
-  };
-</script>
+            if (type === 'demo') {
+                demoBtn.classList.add('active-account-tab');
+                demoBtn.classList.remove('text-gray-400');
+                realBtn.classList.remove('active-account-tab');
+                realBtn.classList.add('text-gray-400');
+                bal.innerText = '10,000.00 USD';
+                bal.classList.remove('text-emerald-400');
+            } else {
+                realBtn.classList.add('active-account-tab');
+                realBtn.classList.remove('text-gray-400');
+                demoBtn.classList.remove('active-account-tab');
+                demoBtn.classList.add('text-gray-400');
+                bal.innerText = '0.00 USD';
+                bal.classList.add('text-emerald-400');
+            }
+        }
+    </script>
 </body>
 </html>
