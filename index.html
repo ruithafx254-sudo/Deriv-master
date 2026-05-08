@@ -3,171 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omega | Elite Terminal</title>
+    <title>Beta | Trading Terminal</title>
     <style>
         :root {
-            --green: #00c196; --red: #ff444f; --border: #f1f3f5;
-            --text: #32373c; --muted: #999ea3;
+            --green: #00c196; --red: #ff444f; --bg-light: #f8f9fa;
+            --text-main: #32373c; --text-muted: #999ea3; --border: #f1f3f5;
         }
-        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background: white; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
-        /* Header - Minimal */
-        header { padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); height: 50px; }
-        .logo { font-weight: 800; display: flex; align-items: center; gap: 4px; }
-        .logo b { background: var(--green); color: white; padding: 1px 5px; border-radius: 3px; }
-        .bal { background: #f0f2f4; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: 700; }
-
-        /* 3/4 Engine Chart Section */
-        #chart-engine {
-            flex: 0 0 55%; /* Occupies most of the screen */
-            position: relative;
-            background: #fff;
-            padding: 10px 0;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { 
+            background: white; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main); overflow: hidden; height: 100vh; display: flex; flex-direction: column;
         }
-        .price-overlay { position: absolute; top: 10px; left: 15px; z-index: 10; }
-        .price-val { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
-        .price-pct { color: var(--red); font-size: 12px; font-weight: 700; }
-        
+
+        /* --- Precise Header --- */
+        header { 
+            padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border); height: 54px; flex-shrink: 0;
+        }
+        .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; }
+        .logo-box { background: var(--green); color: white; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .bal-pill { background: #f0f2f4; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .btn-deposit { background: var(--green); color: white; border: none; padding: 7px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; }
+
+        /* --- Market Tabs --- */
+        .market-tabs { display: flex; padding: 0 10px; gap: 5px; border-bottom: 1px solid var(--border); overflow-x: auto; flex-shrink: 0; }
+        .tab { padding: 12px 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+        /* --- 3/4 Chart Engine --- */
+        #engine-container { flex: 1; position: relative; background: #fff; min-height: 50vh; }
+        .market-selector-float { position: absolute; top: 15px; left: 15px; z-index: 10; background: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .price-display { position: absolute; top: 60px; left: 15px; z-index: 10; }
+        .price-now { font-size: 38px; font-weight: 800; letter-spacing: -1px; display: block; }
+        .price-pct { color: var(--red); font-size: 13px; font-weight: 700; }
+
         svg { width: 100%; height: 100%; }
-        #path-line { fill: none; stroke: #32373c; stroke-width: 2.5; stroke-linejoin: round; }
+        #chart-path { fill: none; stroke: #32373c; stroke-width: 2.5; stroke-linejoin: round; transition: all 0.3s ease; }
 
-        /* Digit Circles - Above Profit/Loss */
-        .stats-row { display: flex; justify-content: space-around; padding: 8px 10px; border-top: 1px solid var(--border); background: #fff; }
-        .circle-wrap { text-align: center; }
-        .circle { 
-            width: 26px; height: 26px; border: 2px solid #eee; border-radius: 50%; 
+        /* --- Digit Circles (Exact Alignment) --- */
+        .digit-analysis { display: flex; justify-content: space-between; padding: 10px 12px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .d-unit { text-align: center; flex: 1; }
+        .d-circle { 
+            width: 28px; height: 28px; border: 2.5px solid #eee; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 11px; font-weight: 800; margin-bottom: 2px;
+            font-size: 11px; font-weight: 800; margin: 0 auto 3px;
         }
-        .circle.active { border-color: var(--green); color: var(--green); border-right-color: transparent; border-top-color: transparent; transform: rotate(-45deg); }
-        .circle.active span { transform: rotate(45deg); }
-        .pct-label { font-size: 8px; color: var(--muted); font-weight: 700; }
+        .d-circle.active { border-color: var(--green); color: var(--green); border-right-color: transparent; border-top-color: transparent; transform: rotate(-45deg); }
+        .d-circle.active span { transform: rotate(45deg); }
+        .d-pct { font-size: 8px; color: var(--text-muted); font-weight: 700; }
 
-        /* Controls Grid */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; background: var(--border); gap: 1px; border-top: 1px solid var(--border); }
-        .cell { background: white; padding: 10px; text-align: center; }
-        .lbl { font-size: 9px; color: var(--muted); font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        .val { font-size: 16px; font-weight: 800; }
+        /* --- Auto/Manual Switch --- */
+        .mode-toggle { display: flex; height: 45px; border-bottom: 1px solid var(--border); }
+        .mode-btn { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .mode-btn.active { background: #e6f9f5; color: var(--green); }
 
-        /* Bottom Prediction Bar */
-        .prediction-bottom { display: flex; justify-content: space-around; padding: 10px; background: white; border-top: 1px solid var(--border); }
-        .p-box { font-size: 12px; font-weight: 800; color: #ced4da; width: 20px; text-align: center; }
-        .p-box.selected { color: var(--green); position: relative; }
-        .p-box.selected::after { content: ''; position: absolute; bottom: -5px; left: 25%; width: 50%; height: 2px; background: var(--green); }
+        /* --- Input Grid --- */
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; background: var(--border); gap: 1px; }
+        .input-cell { background: white; padding: 12px; text-align: center; }
+        .label { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+        .value { font-size: 18px; font-weight: 800; }
 
-        /* Final Action Buttons */
-        .actions { display: grid; grid-template-columns: 1fr 1fr; }
-        .btn { border: none; padding: 16px; color: white; font-weight: 800; font-size: 15px; }
-        .btn span { display: block; font-size: 9px; font-weight: 400; opacity: 0.8; margin-top: 3px; }
-        .btn-green { background: var(--green); }
-        .btn-red { background: var(--red); }
+        /* --- Prediction Bar --- */
+        .prediction-bar { display: flex; justify-content: space-around; padding: 12px; background: white; border-top: 1px solid var(--border); }
+        .p-num { font-size: 13px; font-weight: 800; color: #ced4da; width: 25px; text-align: center; }
+        .p-num.selected { color: var(--green); border-bottom: 2px solid var(--green); padding-bottom: 2px; }
+
+        /* --- Trade Actions --- */
+        .action-area { display: grid; grid-template-columns: 1fr 1fr; flex-shrink: 0; }
+        .btn-trade { border: none; padding: 18px; color: white; font-weight: 800; font-size: 16px; position: relative; }
+        .btn-trade span { display: block; font-size: 10px; font-weight: 400; opacity: 0.8; margin-top: 4px; }
+        .green { background: var(--green); }
+        .red { background: var(--red); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo"><b>B</b> Beta</div>
-    <select id="mkt-select" style="border:none; font-weight:800; font-size:12px; background:none;">
-        <option>Vol 10 (1s) ▼</option>
-        <option>Vol 50 (1s) ▼</option>
-    </select>
-    <div class="bal">R $0.00</div>
-    <button class="btn-deposit" style="display:none;">Deposit</button> </header>
+    <div class="brand"><div class="logo-box">B</div> Beta</div>
+    <div class="bal-pill"><span style="color:var(--green)">R</span> $0.00 <small>▼</small></div>
+    <button class="btn-deposit">Deposit</button>
+</header>
 
-<div id="chart-engine">
-    <div class="price-overlay">
-        <div class="price-val" id="main-price">9328.72</div>
-        <div class="price-pct">-1.83%</div>
+<div class="market-tabs">
+    <div class="tab active" id="t-match">Matches/Differs</div>
+    <div class="tab" id="t-even">Even/Odd</div>
+    <div class="tab" id="t-over">Over/Under</div>
+</div>
+
+<div id="engine-container">
+    <div class="market-selector-float">Vol 10 (1s) ▼</div>
+    <div class="price-display">
+        <span class="price-now" id="live-price">9328.72</span>
+        <span class="price-pct">-1.83%</span>
     </div>
-    <svg viewBox="0 0 400 200" preserveAspectRatio="none">
-        <path id="path-line" d="" />
+    <svg viewBox="0 0 400 250" preserveAspectRatio="none">
+        <path id="chart-path" d="" />
     </svg>
 </div>
 
-<div class="stats-row" id="digit-row"></div>
-
-<div class="grid">
-    <div class="cell"><div class="lbl">Stake</div><div class="val">$ 10</div></div>
-    <div class="cell"><div class="lbl">Volatility Adj</div><div class="val" style="color:orange;">1.5x</div></div>
-    <div class="cell"><div class="lbl">Take Profit</div><div class="val" style="color:var(--green);">$ 200</div></div>
-    <div class="cell"><div class="lbl">Stop Loss</div><div class="val" style="color:var(--red);">$ 999</div></div>
-</div>
-
-<div class="prediction-bottom" id="pred-row">
+<div class="digit-analysis" id="digit-row">
     </div>
 
-<div class="actions">
-    <button class="btn btn-green" onclick="toggleVip()">Match<span>850% • $95.00</span></button>
-    <button class="btn btn-red">Differ<span>5.6% • $10.56</span></button>
+<div class="mode-toggle">
+    <div class="mode-btn active">● Auto</div>
+    <div class="mode-btn">Manual</div>
 </div>
+
+<div class="control-grid">
+    <div class="input-cell" style="grid-column: span 2; padding: 8px;">
+        <div class="label">Stake</div>
+        <div class="value"><span style="color:#ced4da; font-size:14px;">$</span> 10</div>
+    </div>
+    <div class="input-cell"><div class="label">Take Profit</div><div class="value" style="color:var(--green);">$ 200</div></div>
+    <div class="input-cell"><div class="label">Stop Loss</div><div class="value" style="color:var(--red);">$ 999</div></div>
+</div>
+
+<div class="prediction-bar" id="prediction-row">
+    </div>
+
+<div class="action-area" id="action-btns">
+    </div>
 
 <script>
     let price = 9328.72;
-    let points = [];
+    let history = [];
     let vip = false;
-    let vol = 1.8; // Change this to adjust chart intensity
+    let mode = 'matches';
 
-    function init() {
-        // Build Prediction Row
-        let pRow = document.getElementById('pred-row');
-        for(let i=0; i<10; i++) {
-            pRow.innerHTML += `<div class="p-box ${i===5?'selected':''}">${i}</div>`;
-        }
-        tick();
-    }
-
-    function tick() {
+    function engine() {
         setInterval(() => {
-            // Adjust market movement based on 'vol' variable
-            let move = (Math.random() - 0.5) * vol;
-            price += move;
+            // Realistic Movement
+            let volatility = 1.2;
+            price += (Math.random() - 0.5) * volatility;
 
-            if(vip) price = Math.floor(price * 10) / 10 + 0.05; // Force Match
+            // VIP Logic (Matches Prediction)
+            if(vip && mode === 'matches') price = Math.floor(price * 10) / 10 + 0.05;
 
-            document.getElementById('main-price').innerText = price.toFixed(2);
+            document.getElementById('live-price').innerText = price.toFixed(2);
             
-            // Chart Engine
-            points.push(price);
-            if(points.length > 50) points.shift();
-            drawChart();
+            // Update Path
+            history.push(price);
+            if(history.length > 60) history.shift();
+            drawPath();
 
-            // Circles Update
+            // Update Circles
             updateCircles();
         }, 1000);
     }
 
-    function drawChart() {
-        let max = Math.max(...points);
-        let min = Math.min(...points);
+    function drawPath() {
+        let max = Math.max(...history);
+        let min = Math.min(...history);
         let range = max - min || 1;
-        let d = points.map((p, i) => {
-            let x = (i * (400 / 49));
-            let y = 180 - ((p - min) / range * 140 + 20);
+        let d = history.map((p, i) => {
+            let x = (i * (400 / 59));
+            let y = 230 - ((p - min) / range * 180 + 20);
             return (i === 0 ? 'M' : 'L') + `${x},${y}`;
         }).join(' ');
-        document.getElementById('path-line').setAttribute('d', d);
+        document.getElementById('chart-path').setAttribute('d', d);
     }
 
     function updateCircles() {
-        let lastDigit = Math.floor(price * 100) % 10;
+        let last = Math.floor(price * 100) % 10;
         let html = '';
         for(let i=0; i<10; i++) {
-            let active = (i === lastDigit) ? 'active' : '';
-            html += `<div class="circle-wrap">
-                        <div class="circle ${active}"><span>${i}</span></div>
-                        <div class="pct-label">10.${i}%</div>
-                     </div>`;
+            let active = (i === last) ? 'active' : '';
+            html += `<div class="d-unit">
+                        <div class="d-circle ${active}"><span>${i}</span></div>
+                        <div class="d-pct">10.${i}%</div>
+                    </div>`;
         }
         document.getElementById('digit-row').innerHTML = html;
     }
 
-    function toggleVip() {
-        vip = !vip;
-        console.log("VIP Match Logic: " + vip);
+    function setUI(m) {
+        mode = m;
+        const pRow = document.getElementById('prediction-row');
+        const aArea = document.getElementById('action-btns');
+        
+        if(m === 'matches') {
+            pRow.style.visibility = 'visible';
+            aArea.innerHTML = `<button class="btn-trade green" onclick="vip=true">Match<span>850% • $95.00</span></button>
+                               <button class="btn-trade red">Differ<span>5.6% • $10.56</span></button>`;
+        } else if(m === 'evenodd') {
+            pRow.style.visibility = 'hidden';
+            aArea.innerHTML = `<button class="btn-trade green">Even<span>95% • $19.50</span></button>
+                               <button class="btn-trade red">Odd<span>95% • $19.50</span></button>`;
+        }
     }
 
-    init();
+    // Initialize 0-9 bar
+    const pRow = document.getElementById('prediction-row');
+    for(let i=0; i<10; i++) {
+        pRow.innerHTML += `<div class="p-num ${i===5?'selected':''}">${i}</div>`;
+    }
+
+    window.onload = () => { setUI('matches'); engine(); };
 </script>
 
 </body>
