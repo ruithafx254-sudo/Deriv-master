@@ -1,266 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALPHA-BINARY | Ultimate Trading Suite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notification Scheduler</title>
+<style>
+    /* Global Styles */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* Configuration Form Card */
+    .config-card {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .config-card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #1a1a1a;
+        font-size: 22px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a4a4a;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 6px;
+        font-size: 14px;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        height: 80px;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        border-color: #007aff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #007aff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .submit-btn:hover {
+        background-color: #0063cc;
+    }
+
+    /* Live Countdown Status */
+    #status-msg {
+        margin-top: 15px;
+        font-size: 13px;
+        color: #666;
+        text-align: center;
+        min-height: 18px;
+    }
+
+    /* --- Notification Banner Styles --- */
+    #notification-container {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 90%;
+        max-width: 360px;
+    }
+
+    .popup-notification {
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 13px;
+        padding: 14px 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
         
-        :root {
-            --bg-main: #0a0a0c;
-            --card-bg: #141417;
-            --accent-blue: #007aff;
-            --deriv-green: #4bb4b3;
-            --deriv-red: #ff444f;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
+        /* Slide down animation mechanics */
+        transform: translateY(-150%);
+        opacity: 0;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
 
-        body {
-            background-color: var(--bg-main);
-            color: #e2e2e2;
-            font-family: 'Inter', sans-serif;
-        }
+    .popup-notification.reveal {
+        transform: translateY(0);
+        opacity: 1;
+    }
 
-        .glass-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
+    .app-icon {
+        width: 38px;
+        height: 38px;
+        background-color: #e1e1e1;
+        border-radius: 9px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
 
-        .glass-card:hover {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 20px rgba(0, 122, 255, 0.1);
-        }
+    .msg-body {
+        flex-grow: 1;
+    }
 
-        .premium-gradient {
-            background: linear-gradient(135deg, #007aff 0%, #00d1ff 100%);
-        }
+    .msg-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2px;
+    }
 
-        .nav-blur {
-            backdrop-filter: blur(15px);
-            background: rgba(10, 10, 12, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+    .sender-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #000000;
+    }
 
-        .status-dot {
-            height: 8px;
-            width: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px #10b981;
-        }
+    .timestamp {
+        font-size: 11px;
+        color: #8e8e93;
+    }
 
-        input, select {
-            background: #1c1c21 !important;
-            border: 1px solid #2d2d35 !important;
-            color: white !important;
-        }
-    </style>
+    .msg-text {
+        font-size: 13px;
+        color: #333333;
+        margin: 0;
+        line-height: 1.4;
+    }
+</style>
 </head>
 <body>
 
-    <nav class="nav-blur sticky top-0 z-50 px-6 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <div class="text-2xl font-black italic tracking-tighter text-white">
-                BETA<span class="text-blue-500">BINARY</span>
-            </div>
-            <div class="hidden md:flex gap-6 ml-10 text-sm font-semibold text-gray-400">
-                <a href="#" class="text-white">Dashboard</a>
-                <a href="#" class="hover:text-white transition">Marketplace</a>
-                <a href="#" class="hover:text-white transition">Bot Builder</a>
-            </div>
-        </div>
+<div class="config-card">
+    <h2>Schedule Custom Notification</h2>
+    
+    <div class="form-group">
+        <label for="sender">Sender Name</label>
+        <input type="text" id="sender" placeholder="e.g., Alex, Boss, TechAlert">
+    </div>
+    
+    <div class="form-group">
+        <label for="message">Message Content</label>
+        <textarea id="message" placeholder="Type your mock notification text here..."></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="delay">Delay Timer (Seconds)</label>
+        <input type="number" id="delay" value="3" min="0">
+    </div>
+    
+    <button class="submit-btn" onclick="scheduleAlert()">Schedule Popup</button>
+    
+    <div id="status-msg"></div>
+</div>
 
-        <div class="flex items-center gap-4">
-            <div class="bg-[#1c1c21] rounded-full p-1 flex border border-gray-800">
-                <button id="demoTab" onclick="toggleAcc('demo')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white">DEMO</button>
-                <button id="realTab" onclick="toggleAcc('real')" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-500">REAL</button>
-            </div>
-            <div class="text-right mr-2">
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Balance</p>
-                <p id="balance" class="text-lg font-black text-white">$10,000.00</p>
-            </div>
-            <button class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-500/20">
-                DEPOSIT
-            </button>
-        </div>
-    </nav>
+<!-- Target wrapper where the banner will be injected -->
+<div id="notification-container"></div>
 
-    <main class="max-w-7xl mx-auto p-6">
+<script>
+    function scheduleAlert() {
+        // Grab values from inputs
+        const sender = document.getElementById('sender').value.trim() || 'Notification';
+        const message = document.getElementById('message').value.trim() || 'No message contents provided.';
+        const delaySeconds = parseFloat(document.getElementById('delay').value) || 0;
         
-        <div class="mb-12">
-            <div class="flex justify-between items-end mb-6">
-                <div>
-                    <h2 class="text-3xl font-black text-white">Sentinel Marketplace</h2>
-                    <p class="text-gray-500">Pre-configured AI Bots for every Volatility Index</p>
+        const statusMsg = document.getElementById('status-msg');
+        
+        // Convert seconds to milliseconds
+        const delayMs = delaySeconds * 1000;
+        
+        statusMsg.innerText = `Scheduled! Dynamic popup appearing in ${delaySeconds}s...`;
+        
+        // Execute the delayed banner trigger
+        setTimeout(() => {
+            statusMsg.innerText = '';
+            triggerPopup(sender, message);
+        }, delayMs);
+    }
+
+    function triggerPopup(name, text) {
+        const container = document.getElementById('notification-container');
+        
+        // Clear any active notification currently on screen
+        container.innerHTML = '';
+        
+        // Create elements dynamically
+        const banner = document.createElement('div');
+        banner.className = 'popup-notification';
+        
+        // Get localized current short time string (e.g., "10:45 AM" or "now")
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        banner.innerHTML = `
+            <div class="app-icon">💬</div>
+            <div class="msg-body">
+                <div class="msg-header">
+                    <span class="sender-name">${escapeHTML(name)}</span>
+                    <span class="timestamp">${timeString}</span>
                 </div>
-                <div class="text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                    <span class="status-dot mr-2"></span>SYSTEMS LIVE: 100% ACCURACY
-                </div>
+                <p class="msg-text">${escapeHTML(text)}</p>
             </div>
+        `;
+        
+        container.appendChild(banner);
+        
+        // Force browser layout calculation, then add 'reveal' to trigger animation slide down
+        setTimeout(() => {
+            banner.classList.add('reveal');
+        }, 30);
+        
+        // Auto-close banner smoothly after 5 seconds
+        setTimeout(() => {
+            banner.classList.remove('reveal');
+            // Remove element entirely after exit animation finishes
+            setTimeout(() => { banner.remove(); }, 400);
+        }, 5000);
+    }
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="glass-card p-6 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-2 bg-blue-600 text-[10px] font-bold">PREMIUM</div>
-                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 10 (1s)</p>
-                    <h3 class="text-xl font-black mb-4">V10 ALPHA-GEN</h3>
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">850.0%</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Win Rate</span><span class="text-white font-bold">99.8%</span></div>
-                    </div>
-                    <button class="w-full premium-gradient py-3 rounded-xl font-bold text-xs uppercase tracking-widest group-hover:scale-105 transition-all">Load Bot</button>
-                </div>
+    // Simple security layer to sanitize html strings safely
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+</script>
 
-                <div class="glass-card p-6 border-blue-500/30 bg-blue-500/5">
-                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 100 (1s)</p>
-                    <h3 class="text-xl font-black mb-4">V100 DOLLAR PRINTER</h3>
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">95.2%</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Strategy</span><span class="text-white font-bold">AI Scanner</span></div>
-                    </div>
-                    <button class="w-full bg-white text-black py-3 rounded-xl font-bold text-xs uppercase tracking-widest">Running...</button>
-                </div>
-
-                <div class="glass-card p-6">
-                    <p class="text-gray-500 text-[10px] font-bold uppercase">Volatility 50 Index</p>
-                    <h3 class="text-xl font-black mb-4">V50 GHOST-MODE</h3>
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">175.5%</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Risk</span><span class="text-blue-400 font-bold">Minimal</span></div>
-                    </div>
-                    <button class="w-full border border-gray-700 hover:border-blue-500 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition">Load Bot</button>
-                </div>
-
-                <div class="glass-card p-6">
-                    <p class="text-gray-500 text-[10px] font-bold uppercase">Jump 10 Index</p>
-                    <h3 class="text-xl font-black mb-4">J10 CRUSHER</h3>
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Payout</span><span class="text-emerald-400 font-bold">98.0%</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-400">Type</span><span class="text-white font-bold">Over/Under</span></div>
-                    </div>
-                    <button class="w-full border border-gray-700 hover:border-blue-500 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition">Load Bot</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 glass-card overflow-hidden">
-                <div class="bg-[#1c1c21] px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                    <h3 class="font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-microchip text-blue-500"></i> Bot Architect
-                    </h3>
-                    <span class="text-[10px] text-gray-500">v4.2.0-STABLE</span>
-                </div>
-                
-                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-5">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Select Market</label>
-                            <select class="w-full p-3 rounded-xl text-sm font-semibold outline-none focus:ring-1 ring-blue-500">
-                                <option>Volatility 10 (1s) Index</option>
-                                <option>Volatility 50 (1s) Index</option>
-                                <option selected>Volatility 100 (1s) Index</option>
-                                <option>Bear Market Index</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Trade Type</label>
-                            <select class="w-full p-3 rounded-xl text-sm font-semibold outline-none">
-                                <option>Matches / Differs</option>
-                                <option selected>Even / Odd</option>
-                                <option>Over / Under</option>
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Stake ($)</label>
-                                <input type="number" value="10" class="w-full p-3 rounded-xl text-sm font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Martingale</label>
-                                <input type="number" value="2.1" class="w-full p-3 rounded-xl text-sm font-bold">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-5">
-                        <div>
-                            <label class="text-[10px] font-bold text-emerald-500 uppercase block mb-2">Take Profit ($)</label>
-                            <input type="number" value="50" class="w-full p-3 rounded-xl text-sm font-bold border-emerald-500/20">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-red-500 uppercase block mb-2">Stop Loss ($)</label>
-                            <input type="number" value="100" class="w-full p-3 rounded-xl text-sm font-bold border-red-500/20">
-                        </div>
-                        <div class="pt-2">
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-95">
-                                <i class="fa-solid fa-play mr-2"></i> INITIALIZE BOT ENGINE
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card p-6 flex flex-col justify-between border-blue-500/20">
-                <div>
-                    <h3 class="font-bold text-sm mb-6 flex items-center justify-between">
-                        Logic Blocks 
-                        <span class="text-xs font-normal text-emerald-400">Running</span>
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg text-[11px]">
-                            <span class="text-blue-400 font-bold">IF</span> Tick Pattern == <span class="text-white">Even(3)</span>
-                        </div>
-                        <div class="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg text-[11px] ml-4">
-                            <span class="text-emerald-400 font-bold">EXECUTE</span> Buy <span class="text-white">EVEN</span>
-                        </div>
-                        <div class="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-[11px] ml-4">
-                            <span class="text-red-400 font-bold">ON LOSS</span> Multiply Stake <span class="text-white">x2.1</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 pt-6 border-t border-white/5 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">Total Profit</span>
-                        <span class="text-xl font-black text-emerald-400">+$240.50</span>
-                    </div>
-                    <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-blue-500 h-full" style="width: 65%"></div>
-                    </div>
-                    <p class="text-[10px] text-center text-gray-600 font-bold uppercase tracking-widest">Trading in Progress...</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        function toggleAcc(type) {
-            const demoBtn = document.getElementById('demoTab');
-            const realBtn = document.getElementById('realTab');
-            const balText = document.getElementById('balance');
-
-            if(type === 'real') {
-                realBtn.classList.add('bg-blue-600', 'text-white');
-                realBtn.classList.remove('text-gray-500');
-                demoBtn.classList.remove('bg-blue-600', 'text-white');
-                demoBtn.classList.add('text-gray-500');
-                balText.innerText = '$0.00';
-                balText.style.color = '#10b981';
-            } else {
-                demoBtn.classList.add('bg-blue-600', 'text-white');
-                demoBtn.classList.remove('text-gray-500');
-                realBtn.classList.remove('bg-blue-600', 'text-white');
-                realBtn.classList.add('text-gray-500');
-                balText.innerText = '$10,000.00';
-                balText.style.color = 'white';
-            }
-        }
-    </script>
 </body>
 </html>
